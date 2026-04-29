@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Resume Builder</title>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- html2pdf -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    font-family:"Times New Roman", serif;
+    background:linear-gradient(to right,#1e3c72,#2a5298);
+    color:#333;
+}
+
+/* NAVBAR */
+.navbar{
+    background:#0f2027;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    letter-spacing:1px;
+}
+
+/* MAIN */
+.container{
+    display:flex;
+    flex-wrap:wrap;
+    padding:20px;
+}
+
+/* FORM */
+.form-section{
+    flex:1;
+    min-width:300px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    margin:10px;
+}
+
+.form-section input, .form-section textarea{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:5px;
+    border:1px solid #ccc;
+}
+
+/* BUTTONS */
+button{
+    padding:10px;
+    margin:5px 0;
+    border:none;
+    background:#1f3c88;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+    width:100%;
+}
+
+button:hover{
+    background:#163172;
+}
+
+/* RESUME PREVIEW */
+.resume{
+    flex:1;
+    min-width:300px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    margin:10px;
+}
+
+.resume img{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid #1f3c88;
+}
+
+/* HEADER */
+.header{
+    text-align:center;
+}
+
+.section-title{
+    background:#1f3c88;
+    color:white;
+    padding:5px;
+    margin-top:10px;
+}
+
+@media(max-width:768px){
+    .container{
+        flex-direction:column;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="navbar">AI Resume Builder</div>
+
+<div class="container">
+
+    <!-- FORM -->
+    <div class="form-section">
+        <h3>Enter Details</h3>
+
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="text" id="email" placeholder="Email">
+        <input type="text" id="phone" placeholder="Phone">
+
+        <textarea id="summary" placeholder="Summary"></textarea>
+        <textarea id="skills" placeholder="Skills (comma separated)"></textarea>
+        <textarea id="education" placeholder="Education"></textarea>
+        <textarea id="experience" placeholder="Experience"></textarea>
+
+        <input type="file" id="imageUpload">
+
+        <button id="generateAI">✨ Generate with AI</button>
+        <button id="updateResume">Update Resume</button>
+        <button id="download">⬇ Download PDF</button>
+    </div>
+
+    <!-- RESUME -->
+    <div class="resume" id="resume">
+
+        <div class="header">
+            <img id="profileImage" src="https://via.placeholder.com/120">
+            <h2 id="rName">Your Name</h2>
+            <p id="rEmail">Email</p>
+            <p id="rPhone">Phone</p>
+        </div>
+
+        <div>
+            <div class="section-title">Summary</div>
+            <p id="rSummary"></p>
+
+            <div class="section-title">Skills</div>
+            <p id="rSkills"></p>
+
+            <div class="section-title">Education</div>
+            <p id="rEducation"></p>
+
+            <div class="section-title">Experience</div>
+            <p id="rExperience"></p>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+// UPDATE RESUME
+$("#updateResume").click(function(){
+    $("#rName").text($("#name").val());
+    $("#rEmail").text($("#email").val());
+    $("#rPhone").text($("#phone").val());
+    $("#rSummary").text($("#summary").val());
+    $("#rSkills").text($("#skills").val());
+    $("#rEducation").text($("#education").val());
+    $("#rExperience").text($("#experience").val());
+});
+
+// IMAGE UPLOAD
+$("#imageUpload").change(function(e){
+    let reader = new FileReader();
+    reader.onload = function(e){
+        $("#profileImage").attr("src", e.target.result);
+    }
+    reader.readAsDataURL(e.target.files[0]);
+});
+
+// SIMPLE AI GENERATION (Auto Fill)
+$("#generateAI").click(function(){
+    $("#name").val("Rahul Sharma");
+    $("#email").val("rahul@email.com");
+    $("#phone").val("9876543210");
+
+    $("#summary").val("A motivated and detail-oriented individual seeking opportunities to apply skills and grow professionally.");
+
+    $("#skills").val("Communication, Leadership, HTML, CSS, JavaScript");
+
+    $("#education").val("Bachelor of Computer Applications - XYZ University");
+
+    $("#experience").val("Fresher / Internship in Web Development");
+
+    alert("AI Content Generated!");
+});
+
+// DOWNLOAD PDF
+$("#download").click(function(){
+    let element = document.getElementById("resume");
+
+    let opt = {
+        margin:       0.5,
+        filename:     'resume.pdf',
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+});
+
+</script>
+
+</body>
+</html>

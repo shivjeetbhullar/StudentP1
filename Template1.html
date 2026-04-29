@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Professional Resume Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    display:flex;
+    background:#f0f2f5;
+}
+
+/* FORM SECTION */
+.form-section{
+    width:35%;
+    background:#ffffff;
+    padding:20px;
+    overflow-y:auto;
+    height:100vh;
+    border-right:4px solid #1f3c88;
+}
+
+.form-section h2{
+    color:#1f3c88;
+}
+
+input, textarea{
+    width:100%;
+    margin:6px 0;
+    padding:8px;
+    font-size:14px;
+}
+
+button{
+    padding:10px;
+    margin-top:8px;
+    background:#1f3c88;
+    color:white;
+    border:none;
+    cursor:pointer;
+    width:100%;
+}
+
+button:hover{
+    background:#162d63;
+}
+
+/* RESUME SECTION */
+.resume-section{
+    width:65%;
+    padding:40px;
+    background:white;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:2px solid #1f3c88;
+    padding-bottom:10px;
+}
+
+.header-text{
+    flex:1;
+}
+
+.profile-img{
+    width:120px;
+    height:120px;
+    object-fit:cover;
+    border:3px solid #1f3c88;
+    border-radius:8px;
+    margin-left:20px;
+}
+
+/* SECTIONS */
+.section{
+    margin-top:20px;
+}
+
+.section h3{
+    border-bottom:2px solid #1f3c88;
+    padding-bottom:5px;
+    color:#1f3c88;
+}
+
+ul{
+    padding-left:20px;
+}
+
+/* PRINT */
+@media print{
+    .form-section{
+        display:none;
+    }
+    .resume-section{
+        width:100%;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- FORM -->
+<div class="form-section">
+    <h2>Resume Builder</h2>
+
+    <input type="text" id="name" placeholder="Full Name">
+    <input type="text" id="title" placeholder="Professional Title">
+    <textarea id="objective" placeholder="Career Objective"></textarea>
+
+    <h3>Contact</h3>
+    <input type="text" id="phone" placeholder="Phone">
+    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="location" placeholder="Location">
+    <input type="text" id="linkedin" placeholder="LinkedIn URL">
+
+    <h3>Photo</h3>
+    <!-- Auto image change -->
+    <input type="file" id="photo" onchange="loadImage(event)">
+
+    <h3>Education</h3>
+    <textarea id="education" placeholder="One per line"></textarea>
+
+    <h3>Skills (comma separated)</h3>
+    <input type="text" id="skills">
+
+    <h3>Projects</h3>
+    <textarea id="projects" placeholder="One per line"></textarea>
+
+    <h3>Experience</h3>
+    <textarea id="experience" placeholder="One per line"></textarea>
+
+    <h3>Certifications</h3>
+    <textarea id="certifications" placeholder="One per line"></textarea>
+
+    <button onclick="generateResume()">Generate Resume</button>
+    <button onclick="window.print()">Download PDF</button>
+</div>
+
+<!-- RESUME -->
+<div class="resume-section">
+
+    <div class="header">
+
+        <div class="header-text">
+            <h1 id="r_name">Your Name</h1>
+            <h4 id="r_title">Your Title</h4>
+        </div>
+
+        <!-- DEFAULT IMAGE -->
+        <img id="r_photo" class="profile-img"
+        src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
+
+    </div>
+
+    <div class="section">
+        <h3>Contact</h3>
+        <p>Phone: <b id="r_phone"></b></p>
+        <p>Email: <b id="r_email"></b></p>
+        <p>Location: <b id="r_location"></b></p>
+        <p>LinkedIn: <a id="r_linkedin" target="_blank"></a></p>
+    </div>
+
+    <div class="section">
+        <h3>Objective</h3>
+        <p id="r_objective"></p>
+    </div>
+
+    <div class="section">
+        <h3>Education</h3>
+        <ul id="r_education"></ul>
+    </div>
+
+    <div class="section">
+        <h3>Skills</h3>
+        <ul id="r_skills"></ul>
+    </div>
+
+    <div class="section">
+        <h3>Projects</h3>
+        <ul id="r_projects"></ul>
+    </div>
+
+    <div class="section">
+        <h3>Experience</h3>
+        <ul id="r_experience"></ul>
+    </div>
+
+    <div class="section">
+        <h3>Certifications</h3>
+        <ul id="r_certifications"></ul>
+    </div>
+
+</div>
+
+<script>
+
+// AUTO IMAGE LOAD
+function loadImage(event){
+    let reader = new FileReader();
+
+    reader.onload = function(){
+        document.getElementById("r_photo").src = reader.result;
+    }
+
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+// LIST GENERATOR
+function generateList(inputId, outputId, separator="\n"){
+    let data = document.getElementById(inputId).value.split(separator);
+    let html = "";
+
+    data.forEach(item=>{
+        if(item.trim() !== ""){
+            html += `<li>${item}</li>`;
+        }
+    });
+
+    document.getElementById(outputId).innerHTML = html;
+}
+
+// MAIN FUNCTION
+function generateResume(){
+
+    document.getElementById('r_name').innerText = document.getElementById('name').value;
+    document.getElementById('r_title').innerText = document.getElementById('title').value;
+
+    document.getElementById('r_phone').innerText = document.getElementById('phone').value;
+    document.getElementById('r_email').innerText = document.getElementById('email').value;
+    document.getElementById('r_location').innerText = document.getElementById('location').value;
+
+    let link = document.getElementById('linkedin').value;
+    let linkTag = document.getElementById('r_linkedin');
+    linkTag.href = link;
+    linkTag.innerText = link;
+
+    document.getElementById('r_objective').innerText = document.getElementById('objective').value;
+
+    generateList('education','r_education');
+    generateList('projects','r_projects');
+    generateList('experience','r_experience');
+    generateList('certifications','r_certifications');
+    generateList('skills','r_skills', ",");
+
+}
+
+</script>
+
+</body>
+</html>

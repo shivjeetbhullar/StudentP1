@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume Builder</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    background:#eef2f7;
+    display:flex;
+}
+
+/* FORM */
+.form{
+    width:32%;
+    background:#fff;
+    padding:20px;
+    height:100vh;
+    overflow-y:auto;
+    box-shadow:2px 0 15px rgba(0,0,0,0.1);
+}
+
+.form input, .form textarea{
+    width:100%;
+    padding:10px;
+    margin-bottom:12px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:6px;
+    background:#4a6cf7;
+    color:#fff;
+    cursor:pointer;
+}
+
+/* PREVIEW */
+.preview{
+    width:68%;
+    display:flex;
+    justify-content:center;
+    padding:30px;
+}
+
+.resume{
+    width:800px;
+    display:flex;
+    background:#fff;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* LEFT */
+.left{
+    width:30%;
+    background:#2f3e46;
+    color:#fff;
+    text-align:center;
+    padding:20px;
+}
+
+.left img{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+/* RIGHT */
+.right{
+    width:70%;
+    padding:20px;
+}
+
+.section{
+    margin-bottom:15px;
+}
+
+.section h3{
+    color:#4a6cf7;
+    border-bottom:2px solid #4a6cf7;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+    body{flex-direction:column;}
+    .form,.preview{width:100%; height:auto;}
+    .resume{flex-direction:column;}
+    .left,.right{width:100%;}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- FORM -->
+<div class="form">
+    <h2>Enter Details</h2>
+
+    <input type="file" id="image">
+    <input type="text" id="name" placeholder="Full Name">
+    <input type="text" id="role" placeholder="Job Title">
+    <input type="text" id="phone" placeholder="Phone">
+    <input type="text" id="email" placeholder="Email">
+
+    <textarea id="about" placeholder="About"></textarea>
+    <input type="text" id="skills" placeholder="Skills (comma separated)">
+    <textarea id="education" placeholder="Education"></textarea>
+    <textarea id="experience" placeholder="Experience"></textarea>
+
+    <button id="downloadBtn">Download Resume</button>
+</div>
+
+<!-- PREVIEW -->
+<div class="preview">
+<div class="resume" id="resume">
+
+<div class="left">
+    <img id="rimg" src="https://via.placeholder.com/120">
+    <h2 id="rname">Your Name</h2>
+    <p id="rrole">Your Role</p>
+    <p id="rphone"></p>
+    <p id="remail"></p>
+</div>
+
+<div class="right">
+
+<div class="section">
+<h3>About</h3>
+<p id="rabout"></p>
+</div>
+
+<div class="section">
+<h3>Skills</h3>
+<ul id="rskills"></ul>
+</div>
+
+<div class="section">
+<h3>Education</h3>
+<ul id="reducation"></ul>
+</div>
+
+<div class="section">
+<h3>Experience</h3>
+<ul id="rexperience"></ul>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* INIT FUNCTION (Single Control) */
+function init(){
+
+    const inputs = document.querySelectorAll("input, textarea");
+    inputs.forEach(el=>{
+        el.addEventListener("input", updateResume);
+    });
+
+    document.getElementById("image").addEventListener("change", handleImage);
+    document.getElementById("downloadBtn").addEventListener("click", downloadPDF);
+}
+
+/* IMAGE HANDLER */
+function handleImage(e){
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(){
+        document.getElementById("rimg").src = reader.result;
+    }
+    reader.readAsDataURL(file);
+}
+
+/* UPDATE RESUME */
+function updateResume(){
+
+    document.getElementById("rname").innerText =
+        document.getElementById("name").value || "Your Name";
+
+    document.getElementById("rrole").innerText =
+        document.getElementById("role").value || "Your Role";
+
+    document.getElementById("rphone").innerText =
+        document.getElementById("phone").value;
+
+    document.getElementById("remail").innerText =
+        document.getElementById("email").value;
+
+    document.getElementById("rabout").innerText =
+        document.getElementById("about").value;
+
+    updateSkills();
+    updateList("education","reducation");
+    updateList("experience","rexperience");
+}
+
+/* SKILLS */
+function updateSkills(){
+    const skills = document.getElementById("skills").value.split(",");
+    let html = "";
+
+    skills.forEach(s=>{
+        if(s.trim()){
+            html += `<li>${s.trim()}</li>`;
+        }
+    });
+
+    document.getElementById("rskills").innerHTML = html;
+}
+
+/* LIST HANDLER */
+function updateList(inputId, outputId){
+    const data = document.getElementById(inputId).value.split("\n");
+    let html = "";
+
+    data.forEach(item=>{
+        if(item.trim()){
+            html += `<li>${item}</li>`;
+        }
+    });
+
+    document.getElementById(outputId).innerHTML = html;
+}
+
+/* DOWNLOAD */
+function downloadPDF(){
+    const element = document.getElementById("resume");
+
+    html2pdf().set({
+        margin:0.3,
+        filename:"Resume.pdf",
+        html2canvas:{scale:2},
+        jsPDF:{unit:"in", format:"a4"}
+    }).from(element).save();
+}
+
+/* RUN */
+init();
+
+</script>
+
+</body>
+</html>
